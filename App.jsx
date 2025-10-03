@@ -36,8 +36,6 @@
 
 // export default App;
 
-import 'core-js/es/array/find-last';
-import 'core-js/es/array/find-last-index';
 import React, { useEffect, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -47,6 +45,9 @@ import { loadToken } from './src/redux/slices/authSlice';
 import Loader from './src/components/Loader';
 import Toast from 'react-native-toast-message';
 
+import { applyArrayPolyfills } from './src/utils/polyfills';
+applyArrayPolyfills(); // Call once before anything else
+  
 const AppContent = () => {
   const dispatch = useDispatch();
   const loading = useSelector(state => state.auth.loading);
