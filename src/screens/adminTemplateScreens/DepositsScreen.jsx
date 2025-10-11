@@ -100,7 +100,7 @@ const DepositsScreen = () => {
 
                   <View style={styles.detailRow}>
                     <Text style={styles.label}>Amount:</Text>
-                    <Text style={styles.value}>₹ {item.amount || 0}</Text>
+                    <Text style={styles.value}>${item.amount || 0}</Text>
                   </View>
 
                   <View style={styles.detailRow}>

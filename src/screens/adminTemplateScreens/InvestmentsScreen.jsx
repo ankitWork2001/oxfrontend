@@ -57,7 +57,7 @@ const InvestmentsScreen = () => {
                   <View style={styles.rowBetween}>
                     <Text style={styles.label}>Amount:</Text>
                     <Text style={[styles.value, { color: "#1976D2", fontWeight: "600" }]}>
-                      ₹{item?.amount ?? "N/A"}
+                      ${item?.amount ?? "N/A"}
                     </Text>
                   </View>
 

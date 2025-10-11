@@ -51,7 +51,7 @@ const WithdrawalsScreen = () => {
       </View>
       <View style={styles.rowBetween}>
         <Text style={styles.label}>Amount:</Text>
-        <Text style={styles.value}>₹{item.amount}</Text>
+        <Text style={styles.value}>${item.amount}</Text>
       </View>
       <View style={styles.rowBetween}>
         <Text style={styles.label}>Address:</Text>

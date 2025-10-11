@@ -62,7 +62,7 @@ const UserWithdraw = () => {
     }
 
     if (parseFloat(form.amount) < 50) {
-      return Alert.alert('Error', 'Minimum withdrawal is ₹50');
+      return Alert.alert('Error', 'Minimum withdrawal is $50');
     }
 
     // if (!form.upiId) return Alert.alert('Error', 'Enter UPI-linked email');
