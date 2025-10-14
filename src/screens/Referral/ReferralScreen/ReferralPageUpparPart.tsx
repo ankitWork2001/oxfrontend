@@ -20,7 +20,7 @@ import { RootState } from '../../../redux/store';
 
 const ReferralPageUpparPart = () => {
     // Temporary referral link (edit this whenever needed)
-    const TEMP_REFERRAL_LINK = 'https://yourapp.com/invite'; // You can update this link anytime
+    const TEMP_REFERRAL_LINK = 'https://oxfamofficial.com/'; // You can update this link anytime
 
     const insets = useSafeAreaInsets();
     const { height } = Dimensions.get('window');
@@ -34,7 +34,7 @@ const ReferralPageUpparPart = () => {
     };
 
     const handleWhatsApp = () => {
-        const message = `Use my code ${codeToUse} and get 30% extra bonus! Join here: ${TEMP_REFERRAL_LINK}`;
+        const message = `Use my code ${codeToUse} and get 10% extra bonus! Join here: ${TEMP_REFERRAL_LINK}`;
         const url = `whatsapp://send?text=${encodeURIComponent(message)}`;
         Linking.openURL(url).catch(() =>
             Alert.alert('Error', 'WhatsApp is not installed')
