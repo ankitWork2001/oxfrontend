@@ -13,13 +13,19 @@ import axios from '../../../api/axiosInstance';
 const OtpVerificationScreen = () => {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
   const route = useRoute();
   const { email } = route.params || {};
 
   const handleVerifyOtp = async () => {
-    if (!otp.trim() || !newPassword.trim()) {
-      Alert.alert('Error', 'Please enter OTP and new password');
+    if (!otp.trim() || !newPassword.trim() || !confirmPassword.trim()) {
+      Alert.alert('Error', 'Please enter OTP, new password and confirm password');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'New password and confirm password do not match');
       return;
     }
 
@@ -62,6 +68,15 @@ const OtpVerificationScreen = () => {
         secureTextEntry
         value={newPassword}
         onChangeText={setNewPassword}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm New Password"
+        placeholderTextColor={'black'}
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>

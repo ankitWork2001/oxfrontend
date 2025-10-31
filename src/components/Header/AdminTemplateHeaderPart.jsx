@@ -12,17 +12,19 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
 
-const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
+const AdminTemplateHeaderPart = ({ name, paddingBottom = 40, onSearchChange, showSearch=true }) => {
     const [menuVisible, setMenuVisible] = useState(false);
     const navigation = useNavigation();
     const { height } = Dimensions.get('window');
     const [loading, setLoading] = useState(false);
     const inset = useSafeAreaInsets();
     const dispatch = useDispatch();
+
     const handleNavigate = (screen) => {
         setMenuVisible(false);
         navigation.navigate(screen);
     };
+
     const handleLogout = async () => {
         setLoading(true);
         try {
@@ -31,12 +33,11 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                 setLoading(false);
                 navigation.replace('AuthStack');
             }, 2000);
-
         } catch (error) {
             console.error('Logout Error:', error.message);
-
         }
     };
+
     return (
         <SafeAreaView edges={['left', 'right', 'bottom']}>
             <StatusBar backgroundColor="transparent" barStyle="dark-content" translucent />
@@ -44,26 +45,29 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                 <Text style={styles.greetingText}>{name}</Text>
 
                 <View style={styles.iconGroup}>
-                    <View style={styles.searchContainer}>
-                        <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
-                        <TextInput
-                            placeholder="Search..."
-                            style={styles.searchInput}
-                            placeholderTextColor="#999"
-                        />
-                    </View>
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={styles.iconButton}>
-                        <Fontisto name="bell" size={26} color="#fff" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={styles.iconButton} onPress={() => setMenuVisible(true)}>
-                        <Icon name="menu" size={30} color="#fff" />
-                    </TouchableOpacity>
-                    
-                </View>
+  {showSearch ? (
+    <View style={styles.searchContainer}>
+      <Icon name="search" size={20} color="#999" style={styles.searchIcon} />
+      <TextInput
+        placeholder="Search..."
+        style={styles.searchInput}
+        placeholderTextColor="#999"
+        onChangeText={text => onSearchChange && onSearchChange(text)}
+      />
+    </View>
+  ) : (
+    <View style={{ flex: 1 }} /> // Keeps icons pushed right when no search
+  )}
+
+  <View style={styles.rightIcons}>
+    <TouchableOpacity activeOpacity={0.9} style={styles.iconButton}>
+      <Fontisto name="bell" size={26} color="#fff" />
+    </TouchableOpacity>
+    <TouchableOpacity activeOpacity={0.9} style={styles.iconButton} onPress={() => setMenuVisible(true)}>
+      <Icon name="menu" size={30} color="#fff" />
+    </TouchableOpacity>
+  </View>
+</View>
             </View>
 
             {/* Menu Modal */}
@@ -84,6 +88,8 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                         style={styles.MenuItemImage}
                                     />
                                 </View>
+
+                                {/* Menu items */}
                                 <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Home')}>
                                     <Icon name='dashboard' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Dashboard</Text>
@@ -135,7 +141,6 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                         <ActivityIndicator size={23} color="#000" />
                                         : (<Text style={styles.menuLogoutButtonText}>Log Out</Text>)
                                     }
-
                                 </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>
@@ -148,26 +153,25 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
 
 export default AdminTemplateHeaderPart;
 
+// Styles remain unchanged
 const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: '#34A853',
         paddingHorizontal: 16,
-        paddingTop: 40,
-        height: 250,
+        height: 200,
         width: '100%',
         justifyContent: "center",
-
     },
     greetingText: {
         fontSize: RFValue(20),
         color: '#fff',
         fontWeight: '400',
+        marginVertical: 20,
     },
     iconGroup: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 20
     },
     searchContainer: {
         flexDirection: 'row',
@@ -198,6 +202,11 @@ const styles = StyleSheet.create({
         paddingRight: 10,
         backgroundColor: 'rgba(0,0,0,0.5)',
     },
+    rightIcons: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+},
     menu: {
         backgroundColor: '#fff',
         paddingVertical: 20,
@@ -205,7 +214,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         width: '50%',
         elevation: 5,
-       
     },
     MenuItemImageContainer: {
         width: 32,

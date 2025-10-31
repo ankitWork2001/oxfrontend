@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StatusBar,
@@ -9,6 +9,8 @@ import {
   Alert,
   FlatList,
 } from "react-native";
+import Clipboard from "@react-native-clipboard/clipboard";
+import Icon from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllWithdrawals,
@@ -21,9 +23,27 @@ const WithdrawalsScreen = () => {
   const dispatch = useDispatch();
   const { withdrawals, loading } = useSelector((state) => state.admin);
 
+  const [searchText, setSearchText] = useState("");
+  const [filteredWithdrawals, setFilteredWithdrawals] = useState([]);
+
   useEffect(() => {
     dispatch(fetchAllWithdrawals());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!searchText.trim()) {
+      setFilteredWithdrawals(withdrawals);
+    } else {
+      const lower = searchText.toLowerCase();
+      setFilteredWithdrawals(
+        withdrawals.filter(
+          (w) =>
+            w.userId?.email?.toLowerCase().includes(lower) ||
+            w.address?.toLowerCase().includes(lower)
+        )
+      );
+    }
+  }, [searchText, withdrawals]);
 
   const handleApprove = (item) => {
     if (item.status === "pending") {
@@ -53,15 +73,37 @@ const WithdrawalsScreen = () => {
         <Text style={styles.label}>Amount:</Text>
         <Text style={styles.value}>${item.amount}</Text>
       </View>
+
       <View style={styles.rowBetween}>
         <Text style={styles.label}>Address:</Text>
-        <Text
-          style={[styles.value, { flex: 1, textAlign: "right" }]}
-          numberOfLines={2}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
+            justifyContent: "flex-end",
+          }}
         >
-          {item.address || "N/A"}
-        </Text>
+          <Text
+            style={[styles.value, { flex: 1, textAlign: "right" }]}
+            numberOfLines={2}
+          >
+            {item.address || "N/A"}
+          </Text>
+          {item.address ? (
+            <TouchableOpacity
+              onPress={() => {
+                Clipboard.setString(item.address);
+                Alert.alert("Copied!", "Address has been copied to clipboard.");
+              }}
+              style={{ marginLeft: 8 }}
+            >
+              <Icon name="copy-outline" size={18} color="green" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
+
       <View style={styles.rowBetween}>
         <Text style={styles.label}>Request Time:</Text>
         <Text style={[styles.value, { color: "#1976D2" }]}>
@@ -112,19 +154,22 @@ const WithdrawalsScreen = () => {
         <Loader visible={loading} />
       ) : (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-          {/* FlatList handles scrolling itself */}
-         <FlatList
-  data={withdrawals}
-  keyExtractor={(item) => item._id}
-  renderItem={renderItem}
-  ListHeaderComponent={<AdminTemplateHeaderPart name="Withdrawals" />}
-  ListEmptyComponent={() => (
-    <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>No withdrawals found</Text>
-    </View>
-  )}
-/>
-
+          <FlatList
+            data={filteredWithdrawals}
+            keyExtractor={(item) => item._id}
+            renderItem={renderItem}
+            ListHeaderComponent={
+              <AdminTemplateHeaderPart
+                name="Withdrawals"
+                onSearchChange={setSearchText} // ✅ search integrated
+              />
+            }
+            ListEmptyComponent={() => (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No withdrawals found</Text>
+              </View>
+            )}
+          />
         </SafeAreaView>
       )}
     </>

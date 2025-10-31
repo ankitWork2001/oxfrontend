@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -22,9 +22,27 @@ const DepositsScreen = () => {
   const dispatch = useDispatch();
   const { deposits, loading } = useSelector((state) => state.admin);
 
+  const [searchText, setSearchText] = useState("");
+  const [filteredDeposits, setFilteredDeposits] = useState([]);
+
   useEffect(() => {
     dispatch(fetchAllDeposits());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (!searchText.trim()) {
+      setFilteredDeposits(deposits);
+    } else {
+      const lower = searchText.toLowerCase();
+      setFilteredDeposits(
+        deposits.filter(
+          (d) =>
+            d.userId?.email?.toLowerCase().includes(lower) ||
+            d.address?.toLowerCase().includes(lower)
+        )
+      );
+    }
+  }, [searchText, deposits]);
 
   const handleStatusUpdate = (item, status) => {
     if (item.status !== "pending") {
@@ -35,10 +53,7 @@ const DepositsScreen = () => {
     dispatch(toggleDepositStatus({ id: item._id, status }))
       .unwrap()
       .then((res) => {
-        console.log("🔵 Backend Response:", res);
-
         const readableStatus = status === "completed" ? "approved" : "rejected";
-
         Alert.alert("✅ Success", `Deposit ${readableStatus} successfully!`);
 
         setTimeout(() => {
@@ -46,7 +61,6 @@ const DepositsScreen = () => {
         }, 500);
       })
       .catch((err) => {
-        console.log("❌ Full Error:", JSON.stringify(err, null, 2));
         Alert.alert(
           "Error",
           err?.message || err?.error || JSON.stringify(err) || "Something went wrong"
@@ -77,14 +91,16 @@ const DepositsScreen = () => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContainer}
           >
-            {/* ✅ Header with NO padding */}
-            <AdminTemplateHeaderPart name="Deposits" />
+            {/* ✅ Header with search */}
+            <AdminTemplateHeaderPart
+              name="Deposits"
+              onSearchChange={setSearchText} // Pass search callback
+            />
 
             {/* ✅ Padding only for content below */}
             <View style={styles.contentContainer}>
-              {deposits.map((item) => (
+              {filteredDeposits.map((item) => (
                 <View key={item._id} style={styles.card}>
-                  {/* Header Row */}
                   <View style={styles.cardHeader}>
                     <Text style={styles.cardTitle}>Txn: {item._id?.slice(-6) || "N/A"}</Text>
                     <View style={getStatusStyle(item.status)}>
@@ -92,7 +108,6 @@ const DepositsScreen = () => {
                     </View>
                   </View>
 
-                  {/* Details */}
                   <View style={styles.detailRow}>
                     <Text style={styles.label}>Email:</Text>
                     <Text style={styles.value}>{item.userId?.email || "N/A"}</Text>
@@ -110,7 +125,6 @@ const DepositsScreen = () => {
                     </Text>
                   </View>
 
-                  {/* Actions */}
                   {item.status === "pending" && (
                     <View style={styles.actionsRow}>
                       <TouchableOpacity
@@ -141,12 +155,8 @@ const DepositsScreen = () => {
 export default DepositsScreen;
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    // padding: 12,
-  },
-  contentContainer: {
-    paddingHorizontal: 12,
-  },
+  scrollContainer: {},
+  contentContainer: { paddingHorizontal: 12 },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -158,55 +168,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  statusBadge: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-  },
-  statusText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 12,
-  },
-  detailRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 6,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#555",
-  },
-  value: {
-    fontSize: 14,
-    color: "#333",
-    maxWidth: "60%",
-  },
-  actionsRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 12,
-  },
-  actionBtn: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginLeft: 10,
-  },
-  btnText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
+  cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
+  cardTitle: { fontSize: 16, fontWeight: "bold", color: "#333" },
+  statusBadge: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: 20 },
+  statusText: { color: "#fff", fontWeight: "600", fontSize: 12 },
+  detailRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 6 },
+  label: { fontSize: 14, fontWeight: "600", color: "#555" },
+  value: { fontSize: 14, color: "#333", maxWidth: "60%" },
+  actionsRow: { flexDirection: "row", justifyContent: "flex-end", marginTop: 12 },
+  actionBtn: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8, marginLeft: 10 },
+  btnText: { color: "#fff", fontWeight: "600" },
 });

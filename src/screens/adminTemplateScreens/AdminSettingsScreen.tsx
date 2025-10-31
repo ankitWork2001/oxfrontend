@@ -18,7 +18,7 @@ const AdminSettingsScreen = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[styles.scrollViewContent, { paddingBottom: inset.bottom + 50 }]}
         >
-          <AdminTemplateHeaderPart name='SettingsScreen' paddingBottom={20}/>
+          <AdminTemplateHeaderPart name='SettingsScreen' paddingBottom={20} />
           <Text style={styles.SettingsText}>Admin Settings Screen</Text>
         </ScrollView>
       </SafeAreaView>

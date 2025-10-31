@@ -56,9 +56,9 @@ const DashBoardScreen = () => {
                             showsVerticalScrollIndicator={false}
                             contentContainerStyle={[styles.scrollViewContent, { paddingBottom: inset.bottom + 50 }]}
                         >
-                            <AdminTemplateHeaderPart name={`Hi ${userDetails ? userDetails?.name : 'User'}`} />
+                            <AdminTemplateHeaderPart name={`Hi ${userDetails ? userDetails?.name : 'User'}`} showSearch={false} />
                             <View style={styles.dashboardWrapper}>
-                                <View style={[styles.buttonsContainer, { bottom: height * 0.038 }]}>
+                                <View style={[styles.buttonsContainer, { bottom: height * 0.050 }]}>
                                     <TouchableOpacity 
                                     activeOpacity={0.9}
                                     style={styles.buttons} 
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     },
     buttonsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
     },
     buttons: {
         backgroundColor: '#fff',
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         elevation: 6,
         width: '30%',
-        height: 85
+        height: 85,
     },
     buttonsText: {
         textAlign: 'center',
@@ -258,7 +258,6 @@ const styles = StyleSheet.create({
     SignupTrendText: {
         fontSize: RFValue(18),
         fontWeight: 'bold',
-
     },
     ongoingDashboardCardMainContainer: {
         alignItems: 'center',

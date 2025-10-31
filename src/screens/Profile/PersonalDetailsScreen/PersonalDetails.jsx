@@ -84,9 +84,9 @@ const PersonalDetails = () => {
                             }
 
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        {/* <TouchableOpacity>
                             <Icon name="settings" size={24} color="#fff" />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
 
